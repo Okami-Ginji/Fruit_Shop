@@ -39,14 +39,15 @@ public class FruitDB implements DatabaseInfo{
     public static Fruit getFruit(int id){
         Fruit s=null;
         try(Connection con=getConnect()) {
-            PreparedStatement stmt=con.prepareStatement("Select productName, description, price  from Products where productID=?");
+            PreparedStatement stmt=con.prepareStatement("Select productName, description, price,ProductImage  from Products where productID=?");
             stmt.setInt(1, id);
             ResultSet rs=stmt.executeQuery();
             if(rs.next()){
                 String name=rs.getString(1);
                 String description=rs.getString(2);
                 double price = rs.getDouble(3);
-                s=new Fruit(id,name,description,price);
+                String image = rs.getString(4);
+                s=new Fruit(id,name,description,price,image);
             }
             con.close();
         } catch (Exception ex) {
@@ -110,11 +111,12 @@ public class FruitDB implements DatabaseInfo{
 //-----------------------------------------------------------------------------------
     public static Fruit update(Fruit s){
         try(Connection con=getConnect()) {
-            PreparedStatement stmt=con.prepareStatement("Update Products set productName=?, description=?,price=? where productID =?");
+            PreparedStatement stmt=con.prepareStatement("Update Products set productName=?, description=?,price=?,ProductImage=? where productID =?");
             stmt.setString(1, s.getProductName());
             stmt.setString(2, s.getDescription());
             stmt.setDouble(3, s.getPrice());
-            stmt.setInt(4, s.getProductId());
+            stmt.setString(4, "/"+s.getProductImage());
+            stmt.setInt(5, s.getProductId());
             stmt.executeUpdate();
             con.close();
             return s;

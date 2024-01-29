@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import Model.Fruit;
 import Model.FruitDB;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -76,9 +78,16 @@ public class UpdateServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+ 
         String idString = request.getParameter("id");
         String name = request.getParameter("name");
         String image = request.getParameter("image");
+        if(isValidUrl(image) && image.startsWith("/")) {
+            image = image.substring(1);
+        }
+        else if(!isValidUrl(image)){
+            image = "images/Buoi.jpg";
+        }
         String describe = request.getParameter("describe");
         String priceString = request.getParameter("price");
         try {
@@ -91,7 +100,14 @@ public class UpdateServlet extends HttpServlet {
             System.out.println(e);
         }
     }
+    public boolean isValidUrl(String url) {
+       String imageUrlRegex = ".*\\.(jpg|jpeg|png|gif|bmp)$";       
+        Pattern pattern = Pattern.compile(imageUrlRegex);
+        Matcher matcher = pattern.matcher(url);
 
+
+        return matcher.matches();
+    }
     /** 
      * Returns a short description of the servlet.
      * @return a String containing servlet description
